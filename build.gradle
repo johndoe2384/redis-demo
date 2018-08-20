@@ -1,0 +1,62 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {     
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.4.RELEASE")
+        classpath('se.transmode.gradle:gradle-docker:1.2')
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'docker'
+
+sourceSets {
+    main {
+       java {
+          srcDirs= ["src/main/java"]
+       }
+       resources {
+           srcDirs= ["src/main/resources"]
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+archivesBaseName = 'RedisDemo'
+version = '0.0.1'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web:2.0.4.RELEASE")  
+    compile 'org.springframework.data:spring-data-redis:2.0.9.RELEASE'
+    compile group: 'redis.clients', name: 'jedis', version: '2.9.0'       
+    testCompile('org.springframework.boot:spring-boot-starter-test:2.0.4.RELEASE')
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.2.1'
+}
+
+task buildDocker(type: Docker, dependsOn: build) {
+  push = false
+  
+  // Docker images don't like capital letters
+  applicationName = 'redis-demo'
+  
+  dockerfile = file('Dockerfile')
+  doFirst {
+    copy {
+      from jar
+      into "${stageDir}/target"
+    }
+  }
+}

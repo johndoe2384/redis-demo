@@ -1,0 +1,11 @@
+.classpath
+.elasticbeanstalk/
+.gradle/
+.project
+.settings/
+bin/
+build/
+gradle/
+gradlew
+gradlew.bat
+settings.gradle
